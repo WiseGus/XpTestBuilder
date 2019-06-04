@@ -1,4 +1,5 @@
-﻿using XpTestBuilder.Common;
+﻿using System;
+using XpTestBuilder.Common;
 using XpTestBuilder.Server.Commands;
 
 namespace XpTestBuilder.Server
@@ -19,10 +20,18 @@ namespace XpTestBuilder.Server
                 case CommandsIndex.PING:
                     connection.SendCommand(new PongCommand());
                     break;
+                case CommandsIndex.FORCE_DISCONNECT:
+                    ForceDisconnect(jobInfo.Request.Payload);
+                    break;
                 case CommandsIndex.BUILD_SOLUTION:
                     BuildSolution(jobInfo);
                     break;
             }
+        }
+
+        private void ForceDisconnect(string username)
+        {
+            _commandService.ForceDisconnect(username);
         }
 
         private void BuildSolution(JobInfo jobInfo)

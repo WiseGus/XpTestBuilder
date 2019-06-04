@@ -39,6 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
@@ -52,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ForceDisconnectCommand.cs" />
     <Compile Include="Commands\PingCommad.cs" />
     <Compile Include="Commands\BuildSolutionCommand.cs" />
     <Compile Include="LogsF.cs">

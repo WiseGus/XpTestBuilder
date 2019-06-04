@@ -6,31 +6,17 @@ namespace XpTestBuilder.Client
 {
     public partial class LoginF : Form
     {
-        public ICommandService Proxy;
+        private ICommandService _proxy;
 
         public LoginF()
         {
             InitializeComponent();
-            txtUsername.Text = Environment.MachineName;
+
         }
 
         private void BtnRegisterClient_Click(object sender, System.EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtUsername.Text))
-            {
-                MessageBox.Show("Invalid client name", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            try
-            {
-                Proxy.RegisterClient(txtUsername.Text);
-                DisableControls();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            RegisterClient();
         }
 
         public void EnableControls()
@@ -43,6 +29,35 @@ namespace XpTestBuilder.Client
         {
             txtUsername.Enabled = false;
             btnRegisterClient.Enabled = false;
+        }
+
+        public void RegisterClient()
+        {
+            if (string.IsNullOrEmpty(txtUsername.Text))
+            {
+                MessageBox.Show("Invalid client name", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                _proxy.RegisterClient(txtUsername.Text);
+                DisableControls();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public void SetProxy(ICommandService proxy)
+        {
+            _proxy = proxy;
+        }
+
+        public void SetUsername(string username)
+        {
+            txtUsername.Text = username;
         }
     }
 }

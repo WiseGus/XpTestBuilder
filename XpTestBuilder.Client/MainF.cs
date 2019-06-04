@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using XpTestBuilder.Common;
@@ -25,13 +26,23 @@ namespace XpTestBuilder.Client
             base.OnShown(e);
 
             _loginF = new LoginF();
-            _loginF.Proxy = Proxy;
-            var res = _loginF.ShowDialog();
-            if (res != DialogResult.OK)
+            _loginF.SetProxy(Proxy);
+            _loginF.SetUsername(Environment.MachineName);
+
+            if (bool.TryParse(ConfigurationManager.AppSettings["ManualUsername"], out bool useManualUsername) && useManualUsername)
             {
-                Application.Exit();
+                var res = _loginF.ShowDialog();
+                if (res != DialogResult.OK)
+                {
+                    Application.Exit();
+                }
+            }
+            else
+            {
+                _loginF.RegisterClient();
             }
         }
+
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
@@ -51,7 +62,7 @@ namespace XpTestBuilder.Client
                     break;
                 case CommandsIndex.CLIENT_REGISTER_OK:
                     _loginF.DialogResult = DialogResult.OK;
-                    Text += $" - {data.Payload}";
+                    menuConnectionStatus.Text += $" - {data.Payload}";
                     break;
                 case CommandsIndex.CLIENT_NAME_EXISTS:
                     _loginF.EnableControls();
@@ -247,6 +258,8 @@ namespace XpTestBuilder.Client
 
         private void BtnGetAndBuild_Click(object sender, EventArgs e)
         {
+            if (treeSolutions.SelectedNode == null) return;
+
             var solutionInfo = treeSolutions.SelectedNode.Tag as SolutionInfo;
             Proxy.ReceiveCommand(new BuildSolutionCommand(solutionInfo.Path).Execute());
         }
@@ -254,6 +267,11 @@ namespace XpTestBuilder.Client
         private void MenuPing_Click(object sender, EventArgs e)
         {
             Proxy.ReceiveCommand(new PingCommand().Execute());
+        }
+
+        private void MenuForceDisconnect_Click(object sender, EventArgs e)
+        {
+            Proxy.ReceiveCommand(new ForceDisconnectCommand(Environment.MachineName).Execute());
         }
     }
 

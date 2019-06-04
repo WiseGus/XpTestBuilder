@@ -40,6 +40,9 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripSplitButton1 = new System.Windows.Forms.ToolStripSplitButton();
             this.menuPing = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.menuConnectionStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.menuForceDisconnect = new System.Windows.Forms.ToolStripMenuItem();
             this.tab.SuspendLayout();
             this.tabBuilds.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -130,7 +133,9 @@
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripSplitButton1});
+            this.toolStripSplitButton1,
+            this.toolStripStatusLabel1,
+            this.menuConnectionStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 546);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(969, 22);
@@ -141,6 +146,7 @@
             // 
             this.toolStripSplitButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripSplitButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuForceDisconnect,
             this.menuPing});
             this.toolStripSplitButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripSplitButton1.Image")));
             this.toolStripSplitButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -154,6 +160,26 @@
             this.menuPing.Size = new System.Drawing.Size(180, 22);
             this.menuPing.Text = "Ping!";
             this.menuPing.Click += new System.EventHandler(this.MenuPing_Click);
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(800, 17);
+            this.toolStripStatusLabel1.Spring = true;
+            // 
+            // menuConnectionStatus
+            // 
+            this.menuConnectionStatus.ForeColor = System.Drawing.Color.Green;
+            this.menuConnectionStatus.Name = "menuConnectionStatus";
+            this.menuConnectionStatus.Size = new System.Drawing.Size(65, 17);
+            this.menuConnectionStatus.Text = "Connected";
+            // 
+            // menuForceDisconnect
+            // 
+            this.menuForceDisconnect.Name = "menuForceDisconnect";
+            this.menuForceDisconnect.Size = new System.Drawing.Size(180, 22);
+            this.menuForceDisconnect.Text = "Force disconnect!";
+            this.menuForceDisconnect.Click += new System.EventHandler(this.MenuForceDisconnect_Click);
             // 
             // MainF
             // 
@@ -188,5 +214,8 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripSplitButton toolStripSplitButton1;
         private System.Windows.Forms.ToolStripMenuItem menuPing;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripStatusLabel menuConnectionStatus;
+        private System.Windows.Forms.ToolStripMenuItem menuForceDisconnect;
     }
 }

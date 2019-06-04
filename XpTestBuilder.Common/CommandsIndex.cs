@@ -4,6 +4,7 @@
     {
         public const string PING = "Ping";
         public const string PONG = "Pong";
+        public const string FORCE_DISCONNECT = "ForceDisconnect";
         public const string GET_SOLUTIONS = "GetSolutions";
         public const string CLIENT_REGISTER_OK = "ClientRegisterOk";
         public const string CLIENT_NAME_EXISTS = "ClientNameExists";

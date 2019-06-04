@@ -20,21 +20,19 @@ namespace XpTestBuilder.Server
             commandParser = new CommandParser(this);
             clients = new Dictionary<string, ICommandCallback>();
             buildsManager = new BuildManager(clients);
-
-            Console.WriteLine("!!!!!!!!!!!!!!!!NEW SERVICE INSTANCE");
         }
 
         public void RegisterClient(string clientName)
         {
-            ICommandCallback connection;
-            if (clients.TryGetValue(clientName, out connection))
+            var connection = OperationContext.Current.GetCallbackChannel<ICommandCallback>();
+
+            if (clients.TryGetValue(clientName, out ICommandCallback existingConnection))
             {
                 Console.WriteLine($"Client {clientName} already exists");
                 connection.SendCommand(new ClientNameExistsCommand());
                 return;
             }
 
-            connection = OperationContext.Current.GetCallbackChannel<ICommandCallback>();
             Console.WriteLine($"New client registered: {clientName}");
             clients[clientName] = connection;
 
@@ -67,5 +65,15 @@ namespace XpTestBuilder.Server
                 Console.WriteLine($"Client {connection.Key} unregistered");
             }
         }
+
+        public void ForceDisconnect(string username)
+        {
+            if (clients.TryGetValue(username, out var connection))
+            {
+                clients.Remove(username);
+                Console.WriteLine($"Client {username} unregistered");
+            }
+        }
+
     }
 }
