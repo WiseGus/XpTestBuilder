@@ -62,7 +62,9 @@ namespace XpTestBuilder.Client
                     break;
                 case CommandsIndex.CLIENT_REGISTER_OK:
                     _loginF.DialogResult = DialogResult.OK;
-                    menuConnectionStatus.Text += $" - {data.Payload}";
+                    var clientRegistration = new JavaScriptSerializer().Deserialize<ClientRegistration>(data.Payload);
+                    menuConnectionStatus.Text += $" - {clientRegistration.ClientName}";
+                    Text += $" - {clientRegistration.ServerName}";
                     break;
                 case CommandsIndex.CLIENT_NAME_EXISTS:
                     _loginF.EnableControls();
@@ -261,17 +263,49 @@ namespace XpTestBuilder.Client
             if (treeSolutions.SelectedNode == null) return;
 
             var solutionInfo = treeSolutions.SelectedNode.Tag as SolutionInfo;
-            Proxy.ReceiveCommand(new BuildSolutionCommand(solutionInfo.Path).Execute());
+            try
+            {
+                Proxy.ReceiveCommand(new BuildSolutionCommand(solutionInfo.Path).Execute());
+            }
+            catch (Exception ex)
+            {
+                ShowProxyError(ex);
+            }
         }
 
         private void MenuPing_Click(object sender, EventArgs e)
         {
-            Proxy.ReceiveCommand(new PingCommand().Execute());
+            try
+            {
+                Proxy.ReceiveCommand(new PingCommand().Execute());
+            }
+            catch (Exception ex)
+            {
+                ShowProxyError(ex);
+            }
         }
 
         private void MenuForceDisconnect_Click(object sender, EventArgs e)
         {
-            Proxy.ReceiveCommand(new ForceDisconnectCommand(Environment.MachineName).Execute());
+            try
+            {
+                Proxy.ReceiveCommand(new ForceDisconnectCommand(Environment.MachineName).Execute());
+            }
+            catch (Exception ex)
+            {
+                ShowProxyError(ex);
+            }
+        }
+
+        private void ShowProxyError(Exception ex)
+        {
+            var message = ex.Message;
+            while (ex.InnerException != null)
+            {
+                ex = ex.InnerException;
+                message = ex.Message;
+            }
+            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 

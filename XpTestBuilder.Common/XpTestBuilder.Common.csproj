@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildResult.cs" />
+    <Compile Include="ClientRegistration.cs" />
     <Compile Include="CommandData.cs" />
     <Compile Include="CommandsIndex.cs" />
     <Compile Include="ICommand.cs" />

@@ -36,7 +36,7 @@ namespace XpTestBuilder.Server
             Console.WriteLine($"New client registered: {clientName}");
             clients[clientName] = connection;
 
-            connection.SendCommand(new ClientRegisterOkCommand(clientName));
+            connection.SendCommand(new ClientRegisterOkCommand(new ClientRegistration(clientName, ConfigurationManager.AppSettings["ServerName"])));
             connection.SendCommand(new GetSolutionsCommand(ConfigurationManager.AppSettings["SourcesFolder"]));
             connection.SendCommand(new JobsAnalysisCommand(buildsManager.GetJobsAnalysis()));
         }

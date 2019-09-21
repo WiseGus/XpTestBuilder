@@ -1,14 +1,16 @@
-﻿using XpTestBuilder.Common;
+﻿using System.Web.Script.Serialization;
+using XpTestBuilder.Common;
 
 namespace XpTestBuilder.Server.Commands
 {
     public class ClientRegisterOkCommand : ICommand
     {
-        private readonly string _clientName;
+        private readonly ClientRegistration _clientRegistration;
+        private JavaScriptSerializer _serializer = new JavaScriptSerializer();
 
-        public ClientRegisterOkCommand(string clientName)
+        public ClientRegisterOkCommand(ClientRegistration clientRegistration)
         {
-            _clientName = clientName;
+            _clientRegistration = clientRegistration;
         }
 
         public CommandData Execute()
@@ -16,7 +18,7 @@ namespace XpTestBuilder.Server.Commands
             return new CommandData
             {
                 Command = CommandsIndex.CLIENT_REGISTER_OK,
-                Payload = _clientName
+                Payload = _serializer.Serialize(_clientRegistration)
             };
         }
     }

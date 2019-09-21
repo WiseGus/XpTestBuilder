@@ -44,9 +44,20 @@ namespace XpTestBuilder.Client
                 _proxy.RegisterClient(txtUsername.Text);
                 DisableControls();
             }
+            catch (System.ServiceModel.ProtocolException)
+            {
+                MessageBox.Show("Unable to connect to server. Application will be closed", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                var message = ex.Message;
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                    message = ex.Message;
+                }
+                MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
