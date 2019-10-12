@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using XpTestBuilder.Common;
 
-namespace XpTestBuilder.Server.Builders
+namespace XpTestBuilder.Server
 {
     public class MSBuilder
     {
@@ -32,14 +32,14 @@ namespace XpTestBuilder.Server.Builders
 
             var BuildRequest = new BuildRequestData(_buildResult.JobInfo.Request.Payload, globalProperty, null, targets, null);
 
-            var buildResult = Microsoft.Build.Execution.BuildManager.DefaultBuildManager.Build(buildParams, BuildRequest);
+            var msBuildResult = Microsoft.Build.Execution.BuildManager.DefaultBuildManager.Build(buildParams, BuildRequest);
 
             _buildResult.FinishedAt = DateTime.Now;
-            _buildResult.Status = buildResult.OverallResult == BuildResultCode.Success ? BuildResultType.Success : BuildResultType.Failure;
+            _buildResult.Status = msBuildResult.OverallResult == BuildResultCode.Success ? BuildResultType.Success : BuildResultType.Failure;
 
-            if (buildResult.Exception != null)
+            if (msBuildResult.Exception != null)
             {
-                _buildResult.Log.Add(buildResult.Exception.ToString());
+                _buildResult.Log.Add(msBuildResult.Exception.ToString());
             }
         }
     }

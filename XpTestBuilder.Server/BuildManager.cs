@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Text;
 using System.Timers;
+using System.Web.Script.Serialization;
 using XpTestBuilder.Common;
-using XpTestBuilder.Server.Builders;
 using XpTestBuilder.Server.Commands;
 
 namespace XpTestBuilder.Server
@@ -45,7 +47,19 @@ namespace XpTestBuilder.Server
                 //    //OnBuildComplete?.Invoke(p.Result);
                 //});
                 Broadcast(new JobsStatusCommand(job.JobID, BuildResultType.Started));
-                ProcessBuildJob(job);
+
+                var buildResult = _jobResults.FirstOrDefault(p => p.JobInfo.JobID == job.JobID);
+                buildResult.Status = BuildResultType.Started;
+                try
+                {
+                    GetLatestForSolutionProject(buildResult);
+                    ProcessBuildJob(buildResult);
+                }
+                catch (Exception ex)
+                {
+                    buildResult.Status = BuildResultType.Failure;
+                    buildResult.Log.Add(ex.ToString());
+                }
                 _jobPending = false;
 
                 Broadcast(new JobsAnalysisCommand(_jobResults));
@@ -68,6 +82,7 @@ namespace XpTestBuilder.Server
 
             _jobResults.Add(new BuildResult(jobInfo));
             _jobs.Enqueue(jobInfo);
+
             Broadcast(new JobsAnalysisCommand(_jobResults));
         }
 
@@ -76,15 +91,39 @@ namespace XpTestBuilder.Server
             return _jobResults.ToArray();
         }
 
-        private BuildResult ProcessBuildJob(JobInfo jobInfo)
+        private void GetLatestForSolutionProject(BuildResult buildResult)
         {
-            var buildRes = _jobResults.FirstOrDefault(p => p.JobInfo.JobID == jobInfo.JobID);
-            buildRes.Status = BuildResultType.Started;
+            var tfsUrl = ConfigurationManager.AppSettings["TfsUrl"];
+            var tfsWorkSpace = ConfigurationManager.AppSettings["TfsWorkSpace"];
+            var tfsProjects = new JavaScriptSerializer().Deserialize<string[]>(ConfigurationManager.AppSettings["TfsProjectPaths"]);
 
-            var buildJob = new MSBuilder(buildRes);
+            var getLatestResult = VersionControl.GetLatestChanges(tfsUrl, tfsWorkSpace, tfsProjects, buildResult.JobInfo.Request.Payload);
+            var sb = new StringBuilder();
+            sb.AppendLine("TFS get latest results:");
+            sb.AppendLine($"{nameof(getLatestResult.HaveResolvableWarnings)}: {getLatestResult.HaveResolvableWarnings}");
+            sb.AppendLine($"{nameof(getLatestResult.NoActionNeeded)}: {getLatestResult.NoActionNeeded}");
+            sb.AppendLine($"{nameof(getLatestResult.NumBytes)}: {getLatestResult.NumBytes}");
+            sb.AppendLine($"{nameof(getLatestResult.NumConflicts)}: {getLatestResult.NumConflicts}");
+            sb.AppendLine($"{nameof(getLatestResult.NumFailures)}: {getLatestResult.NumFailures}");
+            sb.AppendLine($"{nameof(getLatestResult.NumFiles)}: {getLatestResult.NumFiles}");
+            sb.AppendLine($"{nameof(getLatestResult.NumOperations)}: {getLatestResult.NumOperations}");
+            sb.AppendLine($"{nameof(getLatestResult.NumResolvedConflicts)}: {getLatestResult.NumResolvedConflicts}");
+            sb.AppendLine($"{nameof(getLatestResult.NumUpdated)}: {getLatestResult.NumUpdated}");
+            sb.AppendLine($"{nameof(getLatestResult.NumWarnings)}: {getLatestResult.NumWarnings}");
+            buildResult.Log.Add(sb.ToString());
+
+            if (getLatestResult.NumFailures > 0)
+            {
+                var failures = getLatestResult.GetFailures();
+                buildResult.Log.AddRange(failures.Select(failure => failure.GetFormattedMessage()));
+                buildResult.Status = BuildResultType.Failure;
+            }
+        }
+
+        private void ProcessBuildJob(BuildResult buildResult)
+        {
+            var buildJob = new MSBuilder(buildResult);
             buildJob.Execute();
-
-            return buildRes;
         }
 
         private void Broadcast(ICommand command)
