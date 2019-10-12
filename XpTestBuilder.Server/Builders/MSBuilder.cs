@@ -3,6 +3,7 @@ using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using System;
 using System.Collections.Generic;
+using XpTestBuilder.Common;
 
 namespace XpTestBuilder.Server.Builders
 {
@@ -34,7 +35,7 @@ namespace XpTestBuilder.Server.Builders
             var buildResult = Microsoft.Build.Execution.BuildManager.DefaultBuildManager.Build(buildParams, BuildRequest);
 
             _buildResult.FinishedAt = DateTime.Now;
-            _buildResult.Success = buildResult.OverallResult == BuildResultCode.Success ? true : false;
+            _buildResult.Status = buildResult.OverallResult == BuildResultCode.Success ? BuildResultType.Success : BuildResultType.Failure;
 
             if (buildResult.Exception != null)
             {

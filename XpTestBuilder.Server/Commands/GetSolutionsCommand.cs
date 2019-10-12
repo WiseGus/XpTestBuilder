@@ -4,15 +4,23 @@ using XpTestBuilder.Common;
 
 namespace XpTestBuilder.Server.Commands
 {
+    public class SourcesFoldersInfo {
+        public string Name { get; set; }
+        public string Path { get; set; }
+    }
+
     public class GetSolutionsCommand : ICommand
     {
-        private readonly string _sourcesFolder;
+        private readonly SourcesFoldersInfo[] _sourcesFolders;
         private JavaScriptSerializer _serializer;
 
-        public GetSolutionsCommand(string sourcesFolder)
+        public GetSolutionsCommand(SourcesFoldersInfo[] sourcesFolders)
         {
-            _sourcesFolder = sourcesFolder;
-            _serializer = new JavaScriptSerializer();
+            _sourcesFolders = sourcesFolders;
+            _serializer = new JavaScriptSerializer
+            {
+                MaxJsonLength = int.MaxValue
+            };
         }
 
         public CommandData Execute()
@@ -29,23 +37,44 @@ namespace XpTestBuilder.Server.Commands
             var res = new SolutionInfo
             {
                 Name = "Root",
-                Path = _sourcesFolder,
+                Path = string.Empty,
                 SolutionType = SolutionType.Folder
             };
 
-            GetSolutions(_sourcesFolder, res);
+            foreach (var sourcesFolder in _sourcesFolders)
+            {
+                var parent = new SolutionInfo
+                {
+                    Name = sourcesFolder.Name,
+                    Path = string.Empty,
+                    SolutionType = SolutionType.Folder
+                };
+                res.Solutions.Add(parent);
+                GetSolutions(sourcesFolder.Path, parent);
+            }
 
-            //var solutions = Directory.EnumerateFiles(_sourcesFolder, "*.sln", SearchOption.AllDirectories);
-            //FileInfo fileInfo;
-            //foreach (var solution in solutions)
+            //foreach (var sourcesFolder in _sourcesFolders)
             //{
-            //    fileInfo = new FileInfo(solution);
-            //    res.Solutions.Add(new SolutionInfo
+            //    var parent = new SolutionInfo
             //    {
-            //        Name = fileInfo.Name,
-            //        Path = fileInfo.FullName,
-            //        SolutionType = SolutionType.Solution
-            //    });
+            //        Name = sourcesFolder.Name,
+            //        Path = string.Empty,
+            //        SolutionType = SolutionType.Folder
+            //    };
+            //    res.Solutions.Add(parent);
+
+            //    var solutions = Directory.EnumerateFiles(sourcesFolder.Path, "*.sln", SearchOption.AllDirectories);
+            //    FileInfo fileInfo;
+            //    foreach (var solution in solutions)
+            //    {
+            //        fileInfo = new FileInfo(solution);
+            //        parent.Solutions.Add(new SolutionInfo
+            //        {
+            //            Name = fileInfo.Name,
+            //            Path = fileInfo.FullName,
+            //            SolutionType = SolutionType.Solution
+            //        });
+            //    }
             //}
 
             return res;

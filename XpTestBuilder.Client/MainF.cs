@@ -19,6 +19,9 @@ namespace XpTestBuilder.Client
         {
             InitializeComponent();
             SetupBuildsGrid();
+
+            btnExpandAll.Click += (sender, e) => treeSolutions.ExpandAll();
+            btnCollapseAll.Click += (sender, e) => treeSolutions.CollapseAll();
         }
 
         protected override void OnShown(EventArgs e)
@@ -71,12 +74,25 @@ namespace XpTestBuilder.Client
                     MessageBox.Show("Client name already exists", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
                 case CommandsIndex.GET_SOLUTIONS:
-                    var solutionInfo = new JavaScriptSerializer().Deserialize<SolutionInfo>(data.Payload);
+                    var solutionInfo = new JavaScriptSerializer { MaxJsonLength = int.MaxValue }.Deserialize<SolutionInfo>(data.Payload);
                     FillTreeSolutions(solutionInfo);
                     break;
                 case CommandsIndex.GET_JOBS:
-                    var jobs = new JavaScriptSerializer().Deserialize<List<BuildResult>>(data.Payload);
-                    RefreshJobs(jobs);
+                    {
+                        var jobs = new JavaScriptSerializer { MaxJsonLength = int.MaxValue }.Deserialize<List<BuildResult>>(data.Payload);
+                        RefreshJobs(jobs);
+                    }
+                    break;
+                case CommandsIndex.JOB_STATUS:
+                    {
+                        var jobStatus = new JavaScriptSerializer().Deserialize<JobStatus>(data.Payload);
+                        var job = (_jobsBs.DataSource as List<JobDataInfo>).Find(p => p.JobID == jobStatus.JobID.ToString());
+                        if (job != null)
+                        {
+                            job.Status = JobDataInfoType.BuildStarted;
+                            dataGridView1.Refresh();
+                        }
+                    }
                     break;
             }
         }
@@ -195,6 +211,9 @@ namespace XpTestBuilder.Client
                     case JobDataInfoType.Success:
                         e.Value = Resources.success;
                         break;
+                    case JobDataInfoType.BuildStarted:
+                        e.Value = Resources.running;
+                        break;
                 }
             }
         }
@@ -231,8 +250,6 @@ namespace XpTestBuilder.Client
             WalkSolutionInfo(solutionInfo.Solutions, rootNode);
 
             treeSolutions.Nodes.Add(rootNode);
-
-            treeSolutions.ExpandAll();
         }
 
         private void WalkSolutionInfo(List<SolutionInfo> solutions, TreeNode rootNode)

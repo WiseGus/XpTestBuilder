@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.ServiceModel;
+using System.Web.Script.Serialization;
 using XpTestBuilder.Common;
 using XpTestBuilder.Server.Commands;
 
@@ -37,7 +38,7 @@ namespace XpTestBuilder.Server
             clients[clientName] = connection;
 
             connection.SendCommand(new ClientRegisterOkCommand(new ClientRegistration(clientName, ConfigurationManager.AppSettings["ServerName"])));
-            connection.SendCommand(new GetSolutionsCommand(ConfigurationManager.AppSettings["SourcesFolder"]));
+            connection.SendCommand(new GetSolutionsCommand(new JavaScriptSerializer().Deserialize<SourcesFoldersInfo[]>(ConfigurationManager.AppSettings["SourcesFolders"])));
             connection.SendCommand(new JobsAnalysisCommand(buildsManager.GetJobsAnalysis()));
         }
 

@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using XpTestBuilder.Common;
 
 namespace XpTestBuilder.Client
 {
     public enum SolutionType { Folder, Solution }
-    public enum JobDataInfoType { Error, Pending, Success }
+    public enum JobDataInfoType { Error, Pending, Success, BuildStarted }
 
     public class SolutionInfo
     {
@@ -48,13 +48,12 @@ namespace XpTestBuilder.Client
             Log = new List<string>(buildRes.Log);
             Solution = buildRes.JobInfo.Request.Payload;
 
-            if (buildRes.Success == null)
+            switch (buildRes.Status)
             {
-                Status = JobDataInfoType.Pending;
-            }
-            else
-            {
-                Status = buildRes.Success.Value ? JobDataInfoType.Success : JobDataInfoType.Error;
+                case BuildResultType.Success: Status = JobDataInfoType.Success; break;
+                case BuildResultType.Failure: Status = JobDataInfoType.Error; break;
+                case BuildResultType.Started: Status = JobDataInfoType.BuildStarted; break;
+                case BuildResultType.Pending: Status = JobDataInfoType.Pending; break;
             }
         }
     }

@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <IntermediateOutputPath>C:\Users\ksofos\AppData\Local\Temp\vs46EA.tmp\Debug\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <IntermediateOutputPath>C:\Users\ksofos\AppData\Local\Temp\vs46EA.tmp\Release\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
@@ -51,6 +53,7 @@
     <Compile Include="Builders\MSBuilder.cs" />
     <Compile Include="BuildManager.cs" />
     <Compile Include="CommandParser.cs" />
+    <Compile Include="Commands\JobStatusCommand.cs" />
     <Compile Include="Commands\PongCommand.cs" />
     <Compile Include="Commands\ClientRegisterOkCommand.cs" />
     <Compile Include="Commands\JobsAnalysisCommand.cs" />

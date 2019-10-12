@@ -35,14 +35,16 @@
             this.tabBuilds = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.tabSolutions = new System.Windows.Forms.TabPage();
+            this.btnExpandAll = new System.Windows.Forms.Button();
+            this.btnCollapseAll = new System.Windows.Forms.Button();
             this.btnGetAndBuild = new System.Windows.Forms.Button();
             this.treeSolutions = new System.Windows.Forms.TreeView();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripSplitButton1 = new System.Windows.Forms.ToolStripSplitButton();
+            this.menuForceDisconnect = new System.Windows.Forms.ToolStripMenuItem();
             this.menuPing = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuConnectionStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.menuForceDisconnect = new System.Windows.Forms.ToolStripMenuItem();
             this.tab.SuspendLayout();
             this.tabBuilds.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -59,15 +61,13 @@
             // 
             // tab
             // 
-            this.tab.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.tab.Controls.Add(this.tabBuilds);
             this.tab.Controls.Add(this.tabSolutions);
-            this.tab.Location = new System.Drawing.Point(1, 2);
+            this.tab.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tab.Location = new System.Drawing.Point(0, 0);
             this.tab.Name = "tab";
             this.tab.SelectedIndex = 0;
-            this.tab.Size = new System.Drawing.Size(970, 545);
+            this.tab.Size = new System.Drawing.Size(973, 568);
             this.tab.TabIndex = 5;
             // 
             // tabBuilds
@@ -76,7 +76,7 @@
             this.tabBuilds.Location = new System.Drawing.Point(4, 22);
             this.tabBuilds.Name = "tabBuilds";
             this.tabBuilds.Padding = new System.Windows.Forms.Padding(3);
-            this.tabBuilds.Size = new System.Drawing.Size(962, 519);
+            this.tabBuilds.Size = new System.Drawing.Size(964, 519);
             this.tabBuilds.TabIndex = 1;
             this.tabBuilds.Text = "Builds";
             this.tabBuilds.UseVisualStyleBackColor = true;
@@ -92,20 +92,40 @@
             this.dataGridView1.Location = new System.Drawing.Point(3, 3);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(956, 513);
+            this.dataGridView1.Size = new System.Drawing.Size(958, 513);
             this.dataGridView1.TabIndex = 0;
             // 
             // tabSolutions
             // 
+            this.tabSolutions.Controls.Add(this.btnExpandAll);
+            this.tabSolutions.Controls.Add(this.btnCollapseAll);
             this.tabSolutions.Controls.Add(this.btnGetAndBuild);
             this.tabSolutions.Controls.Add(this.treeSolutions);
             this.tabSolutions.Location = new System.Drawing.Point(4, 22);
             this.tabSolutions.Name = "tabSolutions";
             this.tabSolutions.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSolutions.Size = new System.Drawing.Size(962, 519);
+            this.tabSolutions.Size = new System.Drawing.Size(965, 542);
             this.tabSolutions.TabIndex = 0;
             this.tabSolutions.Text = "Solutions";
             this.tabSolutions.UseVisualStyleBackColor = true;
+            // 
+            // btnExpandAll
+            // 
+            this.btnExpandAll.Location = new System.Drawing.Point(806, 4);
+            this.btnExpandAll.Name = "btnExpandAll";
+            this.btnExpandAll.Size = new System.Drawing.Size(74, 26);
+            this.btnExpandAll.TabIndex = 6;
+            this.btnExpandAll.Text = "Expand all";
+            this.btnExpandAll.UseVisualStyleBackColor = true;
+            // 
+            // btnCollapseAll
+            // 
+            this.btnCollapseAll.Location = new System.Drawing.Point(886, 4);
+            this.btnCollapseAll.Name = "btnCollapseAll";
+            this.btnCollapseAll.Size = new System.Drawing.Size(72, 26);
+            this.btnCollapseAll.TabIndex = 5;
+            this.btnCollapseAll.Text = "Collapse all";
+            this.btnCollapseAll.UseVisualStyleBackColor = true;
             // 
             // btnGetAndBuild
             // 
@@ -127,7 +147,7 @@
             this.treeSolutions.Location = new System.Drawing.Point(3, 32);
             this.treeSolutions.Name = "treeSolutions";
             this.treeSolutions.SelectedImageIndex = 0;
-            this.treeSolutions.Size = new System.Drawing.Size(972, 484);
+            this.treeSolutions.Size = new System.Drawing.Size(956, 507);
             this.treeSolutions.TabIndex = 3;
             // 
             // statusStrip1
@@ -138,7 +158,7 @@
             this.menuConnectionStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 546);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(969, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(973, 22);
             this.statusStrip1.TabIndex = 6;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -154,17 +174,24 @@
             this.toolStripSplitButton1.Size = new System.Drawing.Size(58, 20);
             this.toolStripSplitButton1.Text = "Debug";
             // 
+            // menuForceDisconnect
+            // 
+            this.menuForceDisconnect.Name = "menuForceDisconnect";
+            this.menuForceDisconnect.Size = new System.Drawing.Size(167, 22);
+            this.menuForceDisconnect.Text = "Force disconnect!";
+            this.menuForceDisconnect.Click += new System.EventHandler(this.MenuForceDisconnect_Click);
+            // 
             // menuPing
             // 
             this.menuPing.Name = "menuPing";
-            this.menuPing.Size = new System.Drawing.Size(180, 22);
+            this.menuPing.Size = new System.Drawing.Size(167, 22);
             this.menuPing.Text = "Ping!";
             this.menuPing.Click += new System.EventHandler(this.MenuPing_Click);
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(800, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(835, 17);
             this.toolStripStatusLabel1.Spring = true;
             // 
             // menuConnectionStatus
@@ -174,18 +201,11 @@
             this.menuConnectionStatus.Size = new System.Drawing.Size(65, 17);
             this.menuConnectionStatus.Text = "Connected";
             // 
-            // menuForceDisconnect
-            // 
-            this.menuForceDisconnect.Name = "menuForceDisconnect";
-            this.menuForceDisconnect.Size = new System.Drawing.Size(180, 22);
-            this.menuForceDisconnect.Text = "Force disconnect!";
-            this.menuForceDisconnect.Click += new System.EventHandler(this.MenuForceDisconnect_Click);
-            // 
             // MainF
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(969, 568);
+            this.ClientSize = new System.Drawing.Size(973, 568);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tab);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -217,5 +237,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel menuConnectionStatus;
         private System.Windows.Forms.ToolStripMenuItem menuForceDisconnect;
+        private System.Windows.Forms.Button btnExpandAll;
+        private System.Windows.Forms.Button btnCollapseAll;
     }
 }

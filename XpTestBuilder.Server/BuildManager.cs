@@ -44,6 +44,7 @@ namespace XpTestBuilder.Server
                 //    _jobPending = false;
                 //    //OnBuildComplete?.Invoke(p.Result);
                 //});
+                Broadcast(new JobsStatusCommand(job.JobID, BuildResultType.Started));
                 ProcessBuildJob(job);
                 _jobPending = false;
 
@@ -78,6 +79,7 @@ namespace XpTestBuilder.Server
         private BuildResult ProcessBuildJob(JobInfo jobInfo)
         {
             var buildRes = _jobResults.FirstOrDefault(p => p.JobInfo.JobID == jobInfo.JobID);
+            buildRes.Status = BuildResultType.Started;
 
             var buildJob = new MSBuilder(buildRes);
             buildJob.Execute();

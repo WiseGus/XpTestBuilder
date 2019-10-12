@@ -12,7 +12,10 @@ namespace XpTestBuilder.Server.Commands
         public JobsAnalysisCommand(IEnumerable<BuildResult> jobsAnalysis)
         {
             _jobsAnalysis = jobsAnalysis;
-            _serializer = new JavaScriptSerializer();
+            _serializer = new JavaScriptSerializer
+            {
+                MaxJsonLength = int.MaxValue
+            };
         }
 
         public CommandData Execute()

@@ -49,6 +49,7 @@
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandCallback.cs" />
     <Compile Include="ICommandService.cs" />
+    <Compile Include="JobStatus.cs" />
     <Compile Include="JobResult.cs" />
     <Compile Include="JobInfo.cs" />
     <Compile Include="SolutionInfo.cs" />

@@ -3,16 +3,19 @@ using System.Collections.Generic;
 
 namespace XpTestBuilder.Common
 {
+    public enum BuildResultType { Success, Failure, Started, Pending }
+
     public class BuildResult
     {
         public JobInfo JobInfo { get; set; }
-        public bool? Success { get; set; }
+        public BuildResultType Status { get; set; }
         public DateTime? FinishedAt { get; set; }
         public List<string> Log { get; set; }
 
         public BuildResult()
         {
             Log = new List<string>();
+            Status = BuildResultType.Pending;
         }
 
         public BuildResult(JobInfo jobInfo)
