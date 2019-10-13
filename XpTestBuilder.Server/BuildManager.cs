@@ -132,7 +132,7 @@ namespace XpTestBuilder.Server
             {
                 try
                 {
-                    client.Value.SendCommand(command);
+                    client.Value.SendToClientCommand(command);
                 }
                 catch (Exception ex)
                 {

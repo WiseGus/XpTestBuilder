@@ -5,6 +5,6 @@ namespace XpTestBuilder.Common
     public interface ICommandCallback
     {
         [OperationContract(IsOneWay = true)]
-        void SendCommand(CommandData data);
+        void SendToClientCommand(CommandData data);
     }
 }

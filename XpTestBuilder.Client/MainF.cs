@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
-using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using XpTestBuilder.Common;
 
 namespace XpTestBuilder.Client
 {
     //[CallbackBehavior(IncludeExceptionDetailInFaults = true, UseSynchronizationContext = true, ValidateMustUnderstand = true, ConcurrencyMode = ConcurrencyMode.Multiple)]
-    public partial class MainF : Form, ICommandCallback
+    public partial class MainF : Form
     {
         public ICommandService Proxy;
         private LoginF _loginF;
         private BindingSource _jobsBs = new BindingSource();
+        private string _clientName;
 
         public MainF()
         {
@@ -54,47 +54,6 @@ namespace XpTestBuilder.Client
                 Proxy.UnregisterClient();
             }
             catch { }
-        }
-
-        public void SendCommand(CommandData data)
-        {
-            switch (data.Command)
-            {
-                case CommandsIndex.PONG:
-                    MessageBox.Show("Pong");
-                    break;
-                case CommandsIndex.CLIENT_REGISTER_OK:
-                    _loginF.DialogResult = DialogResult.OK;
-                    var clientRegistration = new JavaScriptSerializer().Deserialize<ClientRegistration>(data.Payload);
-                    menuConnectionStatus.Text += $" - {clientRegistration.ClientName}";
-                    Text += $" - {clientRegistration.ServerName}";
-                    break;
-                case CommandsIndex.CLIENT_NAME_EXISTS:
-                    _loginF.EnableControls();
-                    MessageBox.Show("Client name already exists", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-                case CommandsIndex.GET_SOLUTIONS:
-                    var solutionInfo = new JavaScriptSerializer { MaxJsonLength = int.MaxValue }.Deserialize<SolutionInfo>(data.Payload);
-                    FillTreeSolutions(solutionInfo);
-                    break;
-                case CommandsIndex.GET_JOBS:
-                    {
-                        var jobs = new JavaScriptSerializer { MaxJsonLength = int.MaxValue }.Deserialize<List<BuildResult>>(data.Payload);
-                        RefreshJobs(jobs);
-                    }
-                    break;
-                case CommandsIndex.JOB_STATUS:
-                    {
-                        var jobStatus = new JavaScriptSerializer().Deserialize<JobStatus>(data.Payload);
-                        var job = (_jobsBs.DataSource as List<JobDataInfo>).Find(p => p.JobID == jobStatus.JobID.ToString());
-                        if (job != null)
-                        {
-                            job.Status = JobDataInfoType.BuildStarted;
-                            dataGridView1.Refresh();
-                        }
-                    }
-                    break;
-            }
         }
 
         private void SetupBuildsGrid()
@@ -178,7 +137,7 @@ namespace XpTestBuilder.Client
             if (e.ColumnIndex == 5)
             {
                 var jobDataInfo = dataGridView1.Rows[e.RowIndex].DataBoundItem as JobDataInfo;
-                if (jobDataInfo == null || jobDataInfo.FinishedAt == null)
+                if (jobDataInfo == null || jobDataInfo.FinishedAt == null || jobDataInfo.AddedFrom != _clientName)
                 {
                     e.PaintBackground(e.ClipBounds, true);
                     e.Handled = true;
@@ -187,7 +146,7 @@ namespace XpTestBuilder.Client
             else if (e.ColumnIndex == 6)
             {
                 var jobDataInfo = dataGridView1.Rows[e.RowIndex].DataBoundItem as JobDataInfo;
-                if (jobDataInfo == null || jobDataInfo.FinishedAt == null || jobDataInfo.Status != JobDataInfoType.Success)
+                if (jobDataInfo == null || jobDataInfo.FinishedAt == null || jobDataInfo.Status != JobDataInfoType.Success || jobDataInfo.AddedFrom != _clientName)
                 {
                     e.PaintBackground(e.ClipBounds, true);
                     e.Handled = true;
@@ -220,10 +179,12 @@ namespace XpTestBuilder.Client
 
         private void DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex == -1) return;
+
             if (e.ColumnIndex == 5)
             {
                 var jobDataInfo = dataGridView1.Rows[e.RowIndex].DataBoundItem as JobDataInfo;
-                if (jobDataInfo.FinishedAt == null) return;
+                if (jobDataInfo.FinishedAt == null || jobDataInfo.AddedFrom != _clientName) return;
 
                 var logsF = new LogsF();
                 logsF.SetLogs(string.Join(Environment.NewLine, jobDataInfo.Log));
@@ -232,7 +193,7 @@ namespace XpTestBuilder.Client
             else if (e.ColumnIndex == 6)
             {
                 var jobDataInfo = dataGridView1.Rows[e.RowIndex].DataBoundItem as JobDataInfo;
-                if (jobDataInfo.FinishedAt == null || jobDataInfo.Status != JobDataInfoType.Success) return;
+                if (jobDataInfo.FinishedAt == null || jobDataInfo.Status != JobDataInfoType.Success || jobDataInfo.AddedFrom != _clientName) return;
 
                 MessageBox.Show((e.RowIndex + 1) + "  Row clicked ");
             }
@@ -280,33 +241,24 @@ namespace XpTestBuilder.Client
             if (treeSolutions.SelectedNode == null) return;
 
             var solutionInfo = treeSolutions.SelectedNode.Tag as SolutionInfo;
-            try
-            {
-                Proxy.ReceiveCommand(new BuildSolutionCommand(solutionInfo.Path).Execute());
-            }
-            catch (Exception ex)
-            {
-                ShowProxyError(ex);
-            }
+            SendToServerCommand(new BuildSolutionCommand(solutionInfo.Path));
         }
 
         private void MenuPing_Click(object sender, EventArgs e)
         {
-            try
-            {
-                Proxy.ReceiveCommand(new PingCommand().Execute());
-            }
-            catch (Exception ex)
-            {
-                ShowProxyError(ex);
-            }
+            SendToServerCommand(new PingCommand());
         }
 
         private void MenuForceDisconnect_Click(object sender, EventArgs e)
         {
+            SendToServerCommand(new ForceDisconnectCommand(_clientName));
+        }
+
+        private void SendToServerCommand(ICommand command)
+        {
             try
             {
-                Proxy.ReceiveCommand(new ForceDisconnectCommand(Environment.MachineName).Execute());
+                Proxy.SendToServerCommand(command.Execute());
             }
             catch (Exception ex)
             {

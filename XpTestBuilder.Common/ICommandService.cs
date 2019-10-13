@@ -9,7 +9,7 @@ namespace XpTestBuilder.Common
         void RegisterClient(string clientName);
 
         [OperationContract(IsOneWay = true)]
-        void ReceiveCommand(CommandData data);
+        void SendToServerCommand(CommandData data);
 
         [OperationContract(IsOneWay = true)]
         void UnregisterClient();

@@ -30,19 +30,19 @@ namespace XpTestBuilder.Server
             if (clients.TryGetValue(clientName, out ICommandCallback existingConnection))
             {
                 Console.WriteLine($"Client {clientName} already exists");
-                connection.SendCommand(new ClientNameExistsCommand());
+                connection.SendToClientCommand(new ClientNameExistsCommand());
                 return;
             }
 
             Console.WriteLine($"New client registered: {clientName}");
             clients[clientName] = connection;
 
-            connection.SendCommand(new ClientRegisterOkCommand(new ClientRegistration(clientName, ConfigurationManager.AppSettings["ServerName"])));
-            connection.SendCommand(new GetSolutionsCommand(new JavaScriptSerializer().Deserialize<SourcesFoldersInfo[]>(ConfigurationManager.AppSettings["SourcesFolders"])));
-            connection.SendCommand(new JobsAnalysisCommand(buildsManager.GetJobsAnalysis()));
+            connection.SendToClientCommand(new ClientRegisterOkCommand(new ClientRegistration(clientName, ConfigurationManager.AppSettings["ServerName"])));
+            connection.SendToClientCommand(new GetSolutionsCommand(new JavaScriptSerializer().Deserialize<SourcesFoldersInfo[]>(ConfigurationManager.AppSettings["SourcesFolders"])));
+            connection.SendToClientCommand(new JobsAnalysisCommand(buildsManager.GetJobsAnalysis()));
         }
 
-        public void ReceiveCommand(CommandData eventData)
+        public void SendToServerCommand(CommandData eventData)
         {
             var connection = OperationContext.Current.GetCallbackChannel<ICommandCallback>();
             var clientName = clients.FirstOrDefault(p => p.Value == connection).Key;

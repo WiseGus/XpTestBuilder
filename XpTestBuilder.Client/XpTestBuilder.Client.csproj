@@ -53,6 +53,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandCallback.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Commands\ForceDisconnectCommand.cs" />
     <Compile Include="Commands\PingCommad.cs" />
     <Compile Include="Commands\BuildSolutionCommand.cs" />
