@@ -5,7 +5,7 @@ namespace XpTestBuilder.Server
 {
     public class MemoryLogger : ILogger
     {
-        public LoggerVerbosity Verbosity { get; set; } = LoggerVerbosity.Normal;
+        public LoggerVerbosity Verbosity { get; set; }
         public string Parameters { get; set; }
 
         private List<string> _messages;
@@ -13,6 +13,7 @@ namespace XpTestBuilder.Server
 
         public MemoryLogger(List<string> messages)
         {
+            Verbosity = LoggerVerbosity.Normal;
             _messages = messages;
         }
 

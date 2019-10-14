@@ -17,7 +17,7 @@ namespace XpTestBuilder.Server
                 host.Description.Behaviors.Add(new ErrorServiceBehavior());
                 host.Open();
 
-                Console.WriteLine($"Server listening at: {host.BaseAddresses[0].AbsoluteUri}");
+                Console.WriteLine("Server listening at: {0}", host.BaseAddresses[0].AbsoluteUri);
                 Console.WriteLine();
                 Console.ReadLine();
 

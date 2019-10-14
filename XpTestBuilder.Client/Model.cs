@@ -18,7 +18,11 @@ namespace XpTestBuilder.Client
 
     public class JobData
     {
-        public List<JobDataInfo> Data { get; private set; } = new List<JobDataInfo>();
+        public List<JobDataInfo> Data { get; private set; }
+
+        public JobData() {
+            Data = new List<JobDataInfo>();
+        }
 
         public JobData(List<BuildResult> buildResults)
         {

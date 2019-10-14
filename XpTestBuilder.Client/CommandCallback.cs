@@ -18,8 +18,8 @@ namespace XpTestBuilder.Client
                     _loginF.DialogResult = DialogResult.OK;
                     var clientRegistration = new JavaScriptSerializer().Deserialize<ClientRegistration>(data.Payload);
                     _clientName = clientRegistration.ClientName;
-                    menuConnectionStatus.Text += $" - {_clientName}";
-                    Text += $" - {clientRegistration.ServerName}";
+                    menuConnectionStatus.Text += string.Format(" - {0}", _clientName);
+                    Text += string.Format(" - {0}", clientRegistration.ServerName);
                     break;
                 case CommandsIndex.CLIENT_NAME_EXISTS:
                     _loginF.EnableControls();

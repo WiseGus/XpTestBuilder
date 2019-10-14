@@ -15,11 +15,11 @@ namespace XpTestBuilder.Server
             var folders = GetWorkingFolders(tfsName, tfsWorkSpace, tfsProjects, ref workspace);
             if (folders.Count() != 0)
             {
-                if (TryMatchFile(fileName, folders, out WorkingFolder folder))
+                WorkingFolder folder;
+                if (TryMatchFile(fileName, folders, out folder))
                 {
                     var fileInfo = new FileInfo(fileName);
-                    if (fileInfo.Name.Replace(fileInfo.Extension, "") == fileInfo.Directory.Name)
-                    {
+                    if (fileInfo.Name.Replace(fileInfo.Extension, "") == fileInfo.Directory.Name) {
                         fileName = fileInfo.Directory.FullName;
                     }
 
@@ -35,7 +35,7 @@ namespace XpTestBuilder.Server
             }
             else
             {
-                throw new Exception($"TFS working folder not found");
+                throw new Exception("TFS working folder not found");
             }
         }
 
@@ -71,7 +71,7 @@ namespace XpTestBuilder.Server
             Workspace[] workSpaces = versionControl.QueryWorkspaces(tfsWorkSpace, versionControl.AuthorizedUser, Environment.MachineName);
             if (workSpaces.Length == 0)
             {
-                throw new Exception($"TFS WorkSpace '{tfsWorkSpace}' not found");
+                throw new Exception(string.Format("TFS WorkSpace '{0}' not found", tfsWorkSpace));
             }
 
             workspace = workSpaces[0];

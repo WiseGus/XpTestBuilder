@@ -32,7 +32,8 @@ namespace XpTestBuilder.Client
             _loginF.SetProxy(Proxy);
             _loginF.SetUsername(Environment.MachineName);
 
-            if (bool.TryParse(ConfigurationManager.AppSettings["ManualUsername"], out bool useManualUsername) && useManualUsername)
+            bool useManualUsername;
+            if (bool.TryParse(ConfigurationManager.AppSettings["ManualUsername"], out useManualUsername) && useManualUsername)
             {
                 var res = _loginF.ShowDialog();
                 if (res != DialogResult.OK)

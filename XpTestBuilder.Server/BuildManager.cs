@@ -100,16 +100,16 @@ namespace XpTestBuilder.Server
             var getLatestResult = VersionControl.GetLatestChanges(tfsUrl, tfsWorkSpace, tfsProjects, buildResult.JobInfo.Request.Payload);
             var sb = new StringBuilder();
             sb.AppendLine("TFS get latest results:");
-            sb.AppendLine($"{nameof(getLatestResult.HaveResolvableWarnings)}: {getLatestResult.HaveResolvableWarnings}");
-            sb.AppendLine($"{nameof(getLatestResult.NoActionNeeded)}: {getLatestResult.NoActionNeeded}");
-            sb.AppendLine($"{nameof(getLatestResult.NumBytes)}: {getLatestResult.NumBytes}");
-            sb.AppendLine($"{nameof(getLatestResult.NumConflicts)}: {getLatestResult.NumConflicts}");
-            sb.AppendLine($"{nameof(getLatestResult.NumFailures)}: {getLatestResult.NumFailures}");
-            sb.AppendLine($"{nameof(getLatestResult.NumFiles)}: {getLatestResult.NumFiles}");
-            sb.AppendLine($"{nameof(getLatestResult.NumOperations)}: {getLatestResult.NumOperations}");
-            sb.AppendLine($"{nameof(getLatestResult.NumResolvedConflicts)}: {getLatestResult.NumResolvedConflicts}");
-            sb.AppendLine($"{nameof(getLatestResult.NumUpdated)}: {getLatestResult.NumUpdated}");
-            sb.AppendLine($"{nameof(getLatestResult.NumWarnings)}: {getLatestResult.NumWarnings}");
+            sb.AppendLine(string.Format("{0}: {1}", "HaveResolvableWarnings", getLatestResult.HaveResolvableWarnings));
+            sb.AppendLine(string.Format("{0}: {1}", "NoActionNeeded", getLatestResult.NoActionNeeded));
+            sb.AppendLine(string.Format("{0}: {1}", "NumBytes", getLatestResult.NumBytes));
+            sb.AppendLine(string.Format("{0}: {1}", "NumConflicts", getLatestResult.NumConflicts));
+            sb.AppendLine(string.Format("{0}: {1}", "NumFailures", getLatestResult.NumFailures));
+            sb.AppendLine(string.Format("{0}: {1}", "NumFiles", getLatestResult.NumFiles));
+            sb.AppendLine(string.Format("{0}: {1}", "NumOperations", getLatestResult.NumOperations));
+            sb.AppendLine(string.Format("{0}: {1}", "NumResolvedConflicts", getLatestResult.NumResolvedConflicts));
+            sb.AppendLine(string.Format("{0}: {1}", "NumUpdated", getLatestResult.NumUpdated));
+            sb.AppendLine(string.Format("{0}: {1}", "NumWarnings", getLatestResult.NumWarnings));
             buildResult.Log.Add(sb.ToString());
 
             if (getLatestResult.NumFailures > 0)
@@ -136,7 +136,7 @@ namespace XpTestBuilder.Server
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Unabled to send command to {client.Key}. Error: {ex.ToString()}");
+                    Console.WriteLine(string.Format("Unabled to send command to {0}. Error: {1}", client.Key, ex.ToString()));
                 }
             }
         }

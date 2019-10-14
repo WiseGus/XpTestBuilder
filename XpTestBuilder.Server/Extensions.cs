@@ -14,7 +14,7 @@ namespace XpTestBuilder.Server
         {
             var res = command.Execute();
 
-            Console.WriteLine($"* Server  => [{res.Command}]");
+            Console.WriteLine("* Server  => [{0}]", res.Command);
             //Console.WriteLine($"\t{res.Payload}");
 
             commandCallback.SendToClientCommand(res);

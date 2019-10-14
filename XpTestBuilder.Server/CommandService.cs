@@ -27,14 +27,15 @@ namespace XpTestBuilder.Server
         {
             var connection = OperationContext.Current.GetCallbackChannel<ICommandCallback>();
 
-            if (clients.TryGetValue(clientName, out ICommandCallback existingConnection))
+            ICommandCallback existingConnection;
+            if (clients.TryGetValue(clientName, out existingConnection))
             {
-                Console.WriteLine($"Client {clientName} already exists");
+                Console.WriteLine(string.Format("Client {0} already exists", clientName));
                 connection.SendToClientCommand(new ClientNameExistsCommand());
                 return;
             }
 
-            Console.WriteLine($"New client registered: {clientName}");
+            Console.WriteLine(string.Format("New client registered: {0}", clientName));
             clients[clientName] = connection;
 
             connection.SendToClientCommand(new ClientRegisterOkCommand(new ClientRegistration(clientName, ConfigurationManager.AppSettings["ServerName"])));
@@ -46,8 +47,8 @@ namespace XpTestBuilder.Server
         {
             var connection = OperationContext.Current.GetCallbackChannel<ICommandCallback>();
             var clientName = clients.FirstOrDefault(p => p.Value == connection).Key;
-            Console.WriteLine($"{clientName} => [{eventData.Command}]");
-            Console.WriteLine($"\t{eventData.Payload}");
+            Console.WriteLine(string.Format("{0} => [{1}]", clientName, eventData.Command));
+            Console.WriteLine(string.Format("\t{0}", eventData.Payload));
 
             commandParser.ParseCommand(connection, new JobInfo
             {
@@ -63,16 +64,17 @@ namespace XpTestBuilder.Server
             if (!string.IsNullOrEmpty(connection.Key))
             {
                 clients.Remove(connection.Key);
-                Console.WriteLine($"Client {connection.Key} unregistered");
+                Console.WriteLine(string.Format("Client {0} unregistered", connection.Key));
             }
         }
 
         public void ForceDisconnect(string username)
         {
-            if (clients.TryGetValue(username, out var connection))
+            ICommandCallback connection;
+            if (clients.TryGetValue(username, out connection))
             {
                 clients.Remove(username);
-                Console.WriteLine($"Client {username} unregistered");
+                Console.WriteLine(string.Format("Client {0} unregistered", username));
             }
         }
 
