@@ -31,6 +31,11 @@ namespace XpTestBuilder.Client
             btnRegisterClient.Enabled = false;
         }
 
+        public string GetClientName()
+        {
+            return txtUsername.Text;
+        }
+
         public void RegisterClient()
         {
             if (string.IsNullOrEmpty(txtUsername.Text))
