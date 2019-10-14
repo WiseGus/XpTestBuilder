@@ -3,6 +3,7 @@ using Microsoft.TeamFoundation.VersionControl.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace XpTestBuilder.Server
 {
@@ -16,8 +17,15 @@ namespace XpTestBuilder.Server
             {
                 if (TryMatchFile(fileName, folders, out WorkingFolder folder))
                 {
+                    var fileInfo = new FileInfo(fileName);
+                    if (fileInfo.Name.Replace(fileInfo.Extension, "") == fileInfo.Directory.Name)
+                    {
+                        fileName = fileInfo.Directory.FullName;
+                    }
+
                     string fn = fileName.Remove(0, folder.LocalItem.Length);
                     fn = folder.ServerItem + '/' + fn.Replace('\\', '/');
+
                     return workspace.Get(new GetRequest(fn, RecursionType.Full, VersionSpec.Latest), GetOptions.Overwrite);
                 }
                 else
