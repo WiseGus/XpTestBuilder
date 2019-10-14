@@ -46,6 +46,12 @@ namespace XpTestBuilder.Client
                         }
                     }
                     break;
+                case CommandsIndex.COPY_TO_PATCHES_FOLDER_RESULT:
+                    var logsF = new LogsF();
+                    logsF.SetTitle("Copy to patches folder");
+                    logsF.SetLogs(data.Payload);
+                    logsF.ShowDialog();
+                    break;
             }
         }
     }

@@ -9,6 +9,11 @@ namespace XpTestBuilder.Client
             InitializeComponent();
         }
 
+        public void SetTitle(string title)
+        {
+            Text = title;
+        }
+
         public void SetLogs(string logs)
         {
             txtLogs.Text = logs;

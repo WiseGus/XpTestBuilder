@@ -73,6 +73,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CopyToPatchesFolderManager.cs" />
     <Compile Include="MSBuilder.cs" />
     <Compile Include="BuildManager.cs" />
     <Compile Include="CommandParser.cs" />

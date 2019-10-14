@@ -14,6 +14,7 @@ namespace XpTestBuilder.Server
     {
         internal readonly CommandParser commandParser;
         internal readonly BuildManager buildsManager;
+        internal readonly CopyToPatchesFolderManager copyToPatchesFolderManager;
         internal readonly Dictionary<string, ICommandCallback> clients;
 
         public CommandService()
@@ -21,6 +22,7 @@ namespace XpTestBuilder.Server
             commandParser = new CommandParser(this);
             clients = new Dictionary<string, ICommandCallback>();
             buildsManager = new BuildManager(clients);
+            copyToPatchesFolderManager = new CopyToPatchesFolderManager(ConfigurationManager.AppSettings["OutputDebugFolder"], ConfigurationManager.AppSettings["PatchesFolder"]);
         }
 
         public void RegisterClient(string clientName)
