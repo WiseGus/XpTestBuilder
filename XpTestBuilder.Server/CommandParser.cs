@@ -26,6 +26,9 @@ namespace XpTestBuilder.Server
                 case CommandsIndex.BUILD_SOLUTION:
                     BuildSolution(jobInfo);
                     break;
+                case CommandsIndex.COPY_TO_PATCHES_FOLDER:
+                    CopyToPatchesFolder(jobInfo.Request.Payload);
+                    break;
             }
         }
 
@@ -37,6 +40,11 @@ namespace XpTestBuilder.Server
         private void BuildSolution(JobInfo jobInfo)
         {
             _commandService.buildsManager.AddJob(jobInfo);
+        }
+
+        private void CopyToPatchesFolder(string solutionFilename)
+        {
+            _commandService.copyToPatchesFolderManager.Execute(solutionFilename);
         }
     }
 }

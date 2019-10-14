@@ -11,5 +11,7 @@
         public const string BUILD_SOLUTION = "BuildSolution";
         public const string GET_JOBS = "GetJobs";
         public const string JOB_STATUS = "JobStatus";
+        public const string COPY_TO_PATCHES_FOLDER = "CopyToPatchesFolder";
+        public const string COPY_TO_PATCHES_FOLDER_RESULT = "CopyToPatchesFolderResult";
     }
 }

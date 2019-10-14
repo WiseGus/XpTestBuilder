@@ -187,6 +187,7 @@ namespace XpTestBuilder.Client
                 if (jobDataInfo.FinishedAt == null || jobDataInfo.AddedFrom != _clientName) return;
 
                 var logsF = new LogsF();
+                logsF.SetTitle("Build job logs");
                 logsF.SetLogs(string.Join(Environment.NewLine, jobDataInfo.Log));
                 logsF.ShowDialog();
             }
@@ -195,7 +196,7 @@ namespace XpTestBuilder.Client
                 var jobDataInfo = dataGridView1.Rows[e.RowIndex].DataBoundItem as JobDataInfo;
                 if (jobDataInfo.FinishedAt == null || jobDataInfo.Status != JobDataInfoType.Success || jobDataInfo.AddedFrom != _clientName) return;
 
-                MessageBox.Show((e.RowIndex + 1) + "  Row clicked ");
+                SendToServerCommand(new CopyToPatchesFolderCommand(jobDataInfo.Solution));
             }
         }
 
