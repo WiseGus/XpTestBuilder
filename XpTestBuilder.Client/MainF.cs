@@ -253,7 +253,7 @@ namespace XpTestBuilder.Client
 
         private void MenuForceDisconnect_Click(object sender, EventArgs e)
         {
-            SendToServerCommand(new ForceDisconnectCommand(_clientName));
+            SendToServerCommand(new ForceDisconnectCommand(_loginF.GetClientName()));
         }
 
         private void SendToServerCommand(ICommand command)

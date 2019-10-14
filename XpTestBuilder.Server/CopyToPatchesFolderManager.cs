@@ -34,12 +34,12 @@ namespace XpTestBuilder.Server
 
                     File.Copy(sourceBuildPath, destinationBuildPath, true);
 
-                    response.Payload = $"Success: Copied {sourceBuildPath} to {destinationBuildPath}";
+                    response.Payload = string.Format("Success: Copied {0} to {1}", sourceBuildPath, destinationBuildPath);
                 }
             }
             catch (Exception ex)
             {
-                response.Payload = $"Failure for:{Environment.NewLine}{solutionFilename}:{Environment.NewLine}{Environment.NewLine} {ex.ToString()}";
+                response.Payload = string.Format("Failure for:{0}{1}:{0}{0} {2}", Environment.NewLine, solutionFilename, ex.ToString());
             }
             finally
             {

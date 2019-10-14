@@ -20,11 +20,13 @@ namespace XpTestBuilder.Client
     {
         public List<JobDataInfo> Data { get; private set; }
 
-        public JobData() {
+        public JobData()
+        {
             Data = new List<JobDataInfo>();
         }
 
         public JobData(List<BuildResult> buildResults)
+            : this()
         {
             foreach (var buildRes in buildResults.OrderByDescending(p => p.JobInfo.CreatedAt))
             {
