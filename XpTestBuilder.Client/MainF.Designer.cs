@@ -76,7 +76,7 @@
             this.tabBuilds.Location = new System.Drawing.Point(4, 22);
             this.tabBuilds.Name = "tabBuilds";
             this.tabBuilds.Padding = new System.Windows.Forms.Padding(3);
-            this.tabBuilds.Size = new System.Drawing.Size(964, 519);
+            this.tabBuilds.Size = new System.Drawing.Size(965, 542);
             this.tabBuilds.TabIndex = 1;
             this.tabBuilds.Text = "Builds";
             this.tabBuilds.UseVisualStyleBackColor = true;
@@ -92,7 +92,7 @@
             this.dataGridView1.Location = new System.Drawing.Point(3, 3);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(958, 513);
+            this.dataGridView1.Size = new System.Drawing.Size(959, 536);
             this.dataGridView1.TabIndex = 0;
             // 
             // tabSolutions
@@ -211,7 +211,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainF";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "XpTest builder v0.1";
+            this.Text = "XpTest builder";
             this.tab.ResumeLayout(false);
             this.tabBuilds.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
