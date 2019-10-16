@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using XpTestBuilder.Common;
@@ -12,7 +13,11 @@ namespace XpTestBuilder.Client
             switch (data.Command)
             {
                 case CommandsIndex.PONG:
-                    MessageBox.Show("Pong");
+                    var silentPong = Convert.ToBoolean(data.Payload);
+                    if (!silentPong)
+                    {
+                        MessageBox.Show("Pong");
+                    }
                     break;
                 case CommandsIndex.CLIENT_REGISTER_OK:
                     _loginF.DialogResult = DialogResult.OK;
@@ -20,6 +25,7 @@ namespace XpTestBuilder.Client
                     _clientName = clientRegistration.ClientName;
                     menuConnectionStatus.Text += $" - {_clientName}";
                     Text += $" - {clientRegistration.ServerName}";
+                    _pingTimer.Start();
                     break;
                 case CommandsIndex.CLIENT_NAME_EXISTS:
                     _loginF.EnableControls();

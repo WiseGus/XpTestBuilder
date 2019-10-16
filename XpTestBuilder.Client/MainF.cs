@@ -14,6 +14,7 @@ namespace XpTestBuilder.Client
         private LoginF _loginF;
         private BindingSource _jobsBs = new BindingSource();
         private string _clientName;
+        private System.Timers.Timer _pingTimer = new System.Timers.Timer(TimeSpan.FromSeconds(30).TotalMilliseconds);
 
         public MainF()
         {
@@ -22,6 +23,18 @@ namespace XpTestBuilder.Client
 
             btnExpandAll.Click += (sender, e) => treeSolutions.ExpandAll();
             btnCollapseAll.Click += (sender, e) => treeSolutions.CollapseAll();
+            _pingTimer.Elapsed += (sender, e) =>
+            {
+                try
+                {
+                    Proxy.SendToServerCommand(new PingCommand(true).Execute());
+                }
+                catch
+                {
+                    MessageBox.Show("Failed to ping server", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    _pingTimer.Stop();
+                }
+            };
         }
 
         protected override void OnShown(EventArgs e)
@@ -247,7 +260,7 @@ namespace XpTestBuilder.Client
 
         private void MenuPing_Click(object sender, EventArgs e)
         {
-            SendToServerCommand(new PingCommand());
+            SendToServerCommand(new PingCommand(false));
         }
 
         private void MenuForceDisconnect_Click(object sender, EventArgs e)

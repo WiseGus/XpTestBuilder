@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
-using System.Timers;
 using System.Web.Script.Serialization;
 using XpTestBuilder.Common;
 using XpTestBuilder.Server.Commands;
@@ -16,23 +15,21 @@ namespace XpTestBuilder.Server
         //public delegate void BuildComplete(IJobResult buildResult);
         //public event BuildComplete OnBuildComplete;
 
-        private readonly Timer _timer = new Timer();
+        private const int MAX_ACTIVE_JOB_RESULTS = 3;
+        private readonly System.Threading.Timer _timer;
         private readonly ConcurrentQueue<JobInfo> _jobs = new ConcurrentQueue<JobInfo>();
-        private readonly ConcurrentBag<BuildResult> _jobResults = new ConcurrentBag<BuildResult>();
+        private readonly ConcurrentDictionary<Guid, BuildResult> _jobResults = new ConcurrentDictionary<Guid, BuildResult>();
         private readonly Dictionary<string, ICommandCallback> _serviceSubscribers;
         private bool _jobPending = false;
 
         public BuildManager(Dictionary<string, ICommandCallback> serviceSubscribers)
         {
-            _timer.Elapsed += Timer_Elapsed;
-            _timer.Enabled = true;
-            _timer.Interval = 3000;
-            _timer.AutoReset = true;
-            _timer.Start();
+            _timer = new System.Threading.Timer(Timer_Elapsed);
+            _timer.Change(TimeSpan.Zero, TimeSpan.FromSeconds(3));
             _serviceSubscribers = serviceSubscribers;
         }
 
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        private void Timer_Elapsed(object state)
         {
             if (_jobPending) return;
 
@@ -48,7 +45,8 @@ namespace XpTestBuilder.Server
                 //});
                 Broadcast(new JobsStatusCommand(job.JobID, BuildResultType.Started));
 
-                var buildResult = _jobResults.FirstOrDefault(p => p.JobInfo.JobID == job.JobID);
+                var buildResult = _jobResults.FirstOrDefault(p => p.Value.JobInfo.JobID == job.JobID).Value;
+                if (buildResult == null) return;
                 buildResult.Status = BuildResultType.Started;
                 try
                 {
@@ -62,7 +60,7 @@ namespace XpTestBuilder.Server
                 }
                 _jobPending = false;
 
-                Broadcast(new JobsAnalysisCommand(_jobResults));
+                Broadcast(new JobsAnalysisCommand(_jobResults.Values));
             }
         }
 
@@ -80,15 +78,20 @@ namespace XpTestBuilder.Server
         {
             if (JobExists(jobInfo)) return;
 
-            _jobResults.Add(new BuildResult(jobInfo));
+            _jobResults.TryAdd(jobInfo.JobID, new BuildResult(jobInfo));
             _jobs.Enqueue(jobInfo);
 
-            Broadcast(new JobsAnalysisCommand(_jobResults));
+            if (_jobResults.Count > MAX_ACTIVE_JOB_RESULTS)
+            {
+                _jobResults.TryRemove(_jobResults.ElementAt(_jobResults.Count - 1).Key, out BuildResult removedJob);
+            }
+
+            Broadcast(new JobsAnalysisCommand(_jobResults.Values));
         }
 
         public IEnumerable<BuildResult> GetJobsAnalysis()
         {
-            return _jobResults.ToArray();
+            return _jobResults.Values.ToArray();
         }
 
         private void GetLatestForSolutionProject(BuildResult buildResult)

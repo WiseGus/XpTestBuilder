@@ -14,6 +14,7 @@ namespace XpTestBuilder.Server
     {
         internal readonly CommandParser commandParser;
         internal readonly BuildManager buildsManager;
+        internal readonly SolutionsManager solutionsManager;
         internal readonly CopyToPatchesFolderManager copyToPatchesFolderManager;
         internal readonly Dictionary<string, ICommandCallback> clients;
 
@@ -22,6 +23,8 @@ namespace XpTestBuilder.Server
             commandParser = new CommandParser(this);
             clients = new Dictionary<string, ICommandCallback>();
             buildsManager = new BuildManager(clients);
+            solutionsManager = new SolutionsManager(new JavaScriptSerializer().Deserialize<SourcesFoldersInfo[]>(ConfigurationManager.AppSettings["SourcesFolders"]));
+            solutionsManager.InitSolutionInfo();
             copyToPatchesFolderManager = new CopyToPatchesFolderManager(ConfigurationManager.AppSettings["OutputDebugFolder"], ConfigurationManager.AppSettings["PatchesFolder"]);
         }
 
@@ -40,7 +43,7 @@ namespace XpTestBuilder.Server
             clients[clientName] = connection;
 
             connection.SendToClientCommand(new ClientRegisterOkCommand(new ClientRegistration(clientName, ConfigurationManager.AppSettings["ServerName"])));
-            connection.SendToClientCommand(new GetSolutionsCommand(new JavaScriptSerializer().Deserialize<SourcesFoldersInfo[]>(ConfigurationManager.AppSettings["SourcesFolders"])));
+            connection.SendToClientCommand(new GetSolutionsCommand(solutionsManager.SolutionInfo));
             connection.SendToClientCommand(new JobsAnalysisCommand(buildsManager.GetJobsAnalysis()));
         }
 
@@ -49,7 +52,7 @@ namespace XpTestBuilder.Server
             var connection = OperationContext.Current.GetCallbackChannel<ICommandCallback>();
             var clientName = clients.FirstOrDefault(p => p.Value == connection).Key;
             Console.WriteLine($"{clientName} => [{eventData.Command}]");
-            Console.WriteLine($"\t{eventData.Payload}");
+            Console.WriteLine($"\tPayload: {eventData.Payload}");
 
             commandParser.ParseCommand(connection, new JobInfo
             {

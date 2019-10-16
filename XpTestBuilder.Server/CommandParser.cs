@@ -18,7 +18,7 @@ namespace XpTestBuilder.Server
             switch (jobInfo.Request.Command)
             {
                 case CommandsIndex.PING:
-                    connection.SendToClientCommand(new PongCommand());
+                    connection.SendToClientCommand(new PongCommand(Convert.ToBoolean(jobInfo.Request.Payload)));
                     break;
                 case CommandsIndex.FORCE_DISCONNECT:
                     ForceDisconnect(jobInfo.Request.Payload);
