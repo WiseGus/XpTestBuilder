@@ -15,10 +15,12 @@ namespace XpTestBuilder.Server
 
         internal void ParseCommand(ICommandCallback connection, JobInfo jobInfo)
         {
+            if (!CheckConnection(connection)) return;
+
             switch (jobInfo.Request.Command)
             {
                 case CommandsIndex.PING:
-                    connection.SendToClientCommand(new PongCommand(Convert.ToBoolean(jobInfo.Request.Payload)));
+                    Ping(connection, Convert.ToBoolean(jobInfo.Request.Payload));
                     break;
                 case CommandsIndex.FORCE_DISCONNECT:
                     ForceDisconnect(jobInfo.Request.Payload);
@@ -30,6 +32,25 @@ namespace XpTestBuilder.Server
                     CopyToPatchesFolder(jobInfo.Request.Payload);
                     break;
             }
+        }
+
+        private bool CheckConnection(ICommandCallback connection)
+        {
+            if (!_commandService.ValidateConnection(connection))
+            {
+                connection.SendToClientCommand(new DropClientConnectionCommand());
+                return false;
+            }
+            else
+            {
+                _commandService.RefreshClientLastSeen(connection);
+                return true;
+            }
+        }
+
+        private void Ping(ICommandCallback connection, bool silent)
+        {
+            connection.SendToClientCommand(new PongCommand(silent));
         }
 
         private void ForceDisconnect(string username)

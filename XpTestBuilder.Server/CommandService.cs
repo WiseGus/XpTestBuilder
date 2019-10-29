@@ -16,23 +16,32 @@ namespace XpTestBuilder.Server
         internal readonly BuildManager buildsManager;
         internal readonly SolutionsManager solutionsManager;
         internal readonly CopyToPatchesFolderManager copyToPatchesFolderManager;
-        internal readonly Dictionary<string, ICommandCallback> clients;
+        internal readonly Dictionary<string, ClientConnectionInfo> clients;
 
         public CommandService()
         {
             commandParser = new CommandParser(this);
-            clients = new Dictionary<string, ICommandCallback>();
+            clients = new Dictionary<string, ClientConnectionInfo>();
             buildsManager = new BuildManager(clients);
             solutionsManager = new SolutionsManager(new JavaScriptSerializer().Deserialize<SourcesFoldersInfo[]>(ConfigurationManager.AppSettings["SourcesFolders"]));
             solutionsManager.InitSolutionInfo();
             copyToPatchesFolderManager = new CopyToPatchesFolderManager(ConfigurationManager.AppSettings["OutputDebugFolder"], ConfigurationManager.AppSettings["PatchesFolder"]);
         }
 
+        public void RefreshClientLastSeen(ICommandCallback connection)
+        {
+            var foundConnection = clients.FirstOrDefault(p => p.Value.Connection == connection);
+            if (foundConnection.Value != null)
+            {
+                foundConnection.Value.LastSeen = DateTime.Now;
+            }
+        }
+
         public void RegisterClient(string clientName)
         {
             var connection = OperationContext.Current.GetCallbackChannel<ICommandCallback>();
 
-            if (clients.TryGetValue(clientName, out ICommandCallback existingConnection))
+            if (clients.TryGetValue(clientName, out ClientConnectionInfo existingConnection))
             {
                 Console.WriteLine($"Client {clientName} already exists");
                 connection.SendToClientCommand(new ClientNameExistsCommand());
@@ -40,7 +49,7 @@ namespace XpTestBuilder.Server
             }
 
             Console.WriteLine($"New client registered: {clientName}");
-            clients[clientName] = connection;
+            clients[clientName] = new ClientConnectionInfo { Connection = connection };
 
             connection.SendToClientCommand(new ClientRegisterOkCommand(new ClientRegistration(clientName, ConfigurationManager.AppSettings["ServerName"])));
             connection.SendToClientCommand(new GetSolutionsCommand(solutionsManager.SolutionInfo));
@@ -50,7 +59,7 @@ namespace XpTestBuilder.Server
         public void SendToServerCommand(CommandData eventData)
         {
             var connection = OperationContext.Current.GetCallbackChannel<ICommandCallback>();
-            var clientName = clients.FirstOrDefault(p => p.Value == connection).Key;
+            var clientName = clients.FirstOrDefault(p => p.Value.Connection == connection).Key;
             Console.WriteLine($"{clientName} => [{eventData.Command}]");
             Console.WriteLine($"\tPayload: {eventData.Payload}");
 
@@ -62,9 +71,15 @@ namespace XpTestBuilder.Server
             });
         }
 
+        public bool ValidateConnection(ICommandCallback connection)
+        {
+            var foundConnection = clients.FirstOrDefault(p => p.Value.Connection == connection);
+            return foundConnection.Value != null;
+        }
+
         public void UnregisterClient()
         {
-            var connection = clients.FirstOrDefault(p => p.Value == OperationContext.Current.GetCallbackChannel<ICommandCallback>());
+            var connection = clients.FirstOrDefault(p => p.Value.Connection == OperationContext.Current.GetCallbackChannel<ICommandCallback>());
             if (!string.IsNullOrEmpty(connection.Key))
             {
                 clients.Remove(connection.Key);

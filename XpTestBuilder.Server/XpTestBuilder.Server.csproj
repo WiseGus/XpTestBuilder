@@ -73,6 +73,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientConnectionInfo.cs" />
+    <Compile Include="Commands\DropClientConnectionCommand.cs" />
     <Compile Include="CopyToPatchesFolderManager.cs" />
     <Compile Include="MSBuilder.cs" />
     <Compile Include="BuildManager.cs" />

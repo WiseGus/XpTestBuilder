@@ -19,12 +19,15 @@ namespace XpTestBuilder.Client
                         MessageBox.Show("Pong");
                     }
                     break;
+                case CommandsIndex.DROP_CLIENT_CONNECTION:
+                    _loginF.RegisterClient();
+                    break;
                 case CommandsIndex.CLIENT_REGISTER_OK:
                     _loginF.DialogResult = DialogResult.OK;
                     var clientRegistration = new JavaScriptSerializer().Deserialize<ClientRegistration>(data.Payload);
                     _clientName = clientRegistration.ClientName;
-                    menuConnectionStatus.Text += $" - {_clientName}";
-                    Text += $" - {clientRegistration.ServerName}";
+                    menuConnectionStatus.Text = $"{MENU_CONNECTION_STATUS} - {_clientName}";
+                    Text = $"{TITLE} - {clientRegistration.ServerName}";
                     _pingTimer.Start();
                     break;
                 case CommandsIndex.CLIENT_NAME_EXISTS:

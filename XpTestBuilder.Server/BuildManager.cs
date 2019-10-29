@@ -15,14 +15,14 @@ namespace XpTestBuilder.Server
         //public delegate void BuildComplete(IJobResult buildResult);
         //public event BuildComplete OnBuildComplete;
 
-        private const int MAX_ACTIVE_JOB_RESULTS = 3;
+        private const int MAX_ACTIVE_JOB_RESULTS = 100;
         private readonly System.Threading.Timer _timer;
         private readonly ConcurrentQueue<JobInfo> _jobs = new ConcurrentQueue<JobInfo>();
         private readonly ConcurrentDictionary<Guid, BuildResult> _jobResults = new ConcurrentDictionary<Guid, BuildResult>();
-        private readonly Dictionary<string, ICommandCallback> _serviceSubscribers;
+        private readonly Dictionary<string, ClientConnectionInfo> _serviceSubscribers;
         private bool _jobPending = false;
 
-        public BuildManager(Dictionary<string, ICommandCallback> serviceSubscribers)
+        public BuildManager(Dictionary<string, ClientConnectionInfo> serviceSubscribers)
         {
             _timer = new System.Threading.Timer(Timer_Elapsed);
             _timer.Change(TimeSpan.Zero, TimeSpan.FromSeconds(3));
@@ -31,6 +31,7 @@ namespace XpTestBuilder.Server
 
         private void Timer_Elapsed(object state)
         {
+            AutoCleanupConnections();
             if (_jobPending) return;
 
             JobInfo job;
@@ -61,6 +62,19 @@ namespace XpTestBuilder.Server
                 _jobPending = false;
 
                 Broadcast(new JobsAnalysisCommand(_jobResults.Values));
+            }
+        }
+
+        private void AutoCleanupConnections()
+        {
+            for (int i = _serviceSubscribers.Count - 1; i >= 0; i--)
+            {
+                var lastSeenSeconds = DateTime.Now.Subtract(_serviceSubscribers.ElementAt(i).Value.LastSeen).TotalSeconds;
+                if (lastSeenSeconds > TimeSpan.FromMinutes(1).TotalSeconds)
+                {
+                    Console.WriteLine($"Closing connection with {_serviceSubscribers.ElementAt(i).Key} due to inactivity");
+                    _serviceSubscribers.Remove(_serviceSubscribers.ElementAt(i).Key);
+                }
             }
         }
 
@@ -135,7 +149,7 @@ namespace XpTestBuilder.Server
             {
                 try
                 {
-                    client.Value.SendToClientCommand(command);
+                    client.Value.Connection.SendToClientCommand(command);
                 }
                 catch (Exception ex)
                 {

@@ -15,6 +15,8 @@ namespace XpTestBuilder.Client
         private BindingSource _jobsBs = new BindingSource();
         private string _clientName;
         private System.Timers.Timer _pingTimer = new System.Timers.Timer(TimeSpan.FromSeconds(30).TotalMilliseconds);
+        private const string MENU_CONNECTION_STATUS = "Connected";
+        private const string TITLE = "XpTestBuilder";
 
         public MainF()
         {

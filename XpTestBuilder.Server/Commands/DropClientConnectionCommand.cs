@@ -2,13 +2,13 @@
 
 namespace XpTestBuilder.Server.Commands
 {
-    public class DropClientConnectionCommand : ICommand
+    public class ClientNameExistsCommand : ICommand
     {
         public CommandData Execute()
         {
             return new CommandData
             {
-                Command = CommandsIndex.DROP_CLIENT_CONNECTION
+                Command = CommandsIndex.CLIENT_NAME_EXISTS
             };
         }
     }
